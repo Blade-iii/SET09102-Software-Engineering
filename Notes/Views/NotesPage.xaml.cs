@@ -1,10 +1,10 @@
 using System.Runtime.CompilerServices;
 
-namespace Notes;
+namespace Notes.Views;
 
 public partial class NotesPage : ContentPage
 { 
-			string _fileName = Path.Combine(FileSystem.AppDataDirectory, "notes.txt") ;
+	string _fileName = Path.Combine(FileSystem.AppDataDirectory, "notes.txt") ;
 	public NotesPage()
 	{
 		InitializeComponent();
