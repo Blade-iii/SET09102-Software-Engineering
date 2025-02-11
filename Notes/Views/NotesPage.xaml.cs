@@ -4,7 +4,7 @@ public partial class NotesPage : ContentPage
 { 
 	public NotesPage()
 	{
-		// InitializeComponent();
+		 InitializeComponent();
 
 		string appDataPath = FileSystem.AppDataDirectory;
 		string randomFileName = $"{Path.GetRandomFileName()}.notes.txt";
