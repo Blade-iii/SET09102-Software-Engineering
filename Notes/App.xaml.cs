@@ -1,11 +1,14 @@
-﻿namespace Notes;
+﻿
+namespace Notes;
 
 public partial class App : Application
 {
 	public App()
 	{
-		InitializeComponent();
+    InitializeComponent();
 
-		MainPage = new AppShell();
+        Routing.RegisterRoute(nameof(Views.NotesPage), typeof(Views.NotesPage));
+
+        MainPage = new AppShell();
 	}
 }

@@ -1,40 +1,36 @@
-using System.Collections.ObjectModel;
-using System.IO.Enumeration;
+namespace Notes.Views;
 
-namespace Notes.Models;
+public partial class AllNotesPage : ContentPage
+{
+    public AllNotesPage()
+    {
+        InitializeComponent();
 
-internal class AllNotes{
+        BindingContext = new Models.AllNotes();
+    }
 
-	// Object List - ObservableCollection allows the ui to update based on content on the list
-	public ObservableCollection<Note> Notes { get;set; } = new ObservableCollection<Note>();
-	
-	// Constructor - When AllNotes object is created the notes get loaded. 
-	public AllNotes() => LoadNotes();
+    protected override void OnAppearing()
+    {
+        ((Models.AllNotes)BindingContext).LoadNotes();
+    }
 
-	public void LoadNotes(){
+    private async void Add_Clicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(NotesPage));
+    }
 
-		// Clears the list
-		Notes.Clear();
+    private async void notesCollection_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection.Count != 0)
+        {
+            // Get the note model
+            var note = (Models.Note)e.CurrentSelection[0];
 
-		// Store the notes location in a variable
-		string appDataPath = FileSystem.AppDataDirectory;
+            // Should navigate to "NotePage?ItemId=path\on\\device\XYZ.notes.txt"
+            await Shell.Current.GoToAsync($"{nameof(NotesPage)}?{nameof(NotesPage.ItemId)}={note.Filename}");
 
-		// Uses wildcard to store any textfile with notes.txt in it's name that is stored in the app directory
-		IEnumerable<Note> notes = Directory.EnumerateFiles(appDataPath,"*.notes.txt")
-		
-		.Select(filename => new Note{
-			Filename = filename,
-			Text = File.ReadAllText(filename),
-			Date = File.GetLastWriteTime(filename)
-		})
-
-		// Order the note collection by date
-		.OrderBy(note => note.Date);
-
-		// Add the notes into the collection
-		foreach (Note note in notes)
-		{
-			Notes.Add(note);
-		}
-	}
+            // Unselect the UI
+            notesCollection.SelectedItem = null;
+        }
+    }
 }
