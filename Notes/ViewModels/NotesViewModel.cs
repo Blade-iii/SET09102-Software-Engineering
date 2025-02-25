@@ -29,31 +29,32 @@ public class NotesViewModel : IQueryAttributable
             await Shell.Current.GoToAsync($"{nameof(Views.NotePage)}?load={note.Identifier}");
     }
 
-    void IQueryAttributable.ApplyQueryAttributes(IDictionary<string, object> query)
+  void IQueryAttributable.ApplyQueryAttributes(IDictionary<string, object> query)
+{
+    if (query.ContainsKey("deleted"))
     {
-        if (query.ContainsKey("deleted"))
-        {
-            string noteId = query["deleted"].ToString();
-            NoteViewModel matchedNote = AllNotes.Where((n) => n.Identifier == noteId).FirstOrDefault();
+        string noteId = query["deleted"].ToString();
+        NoteViewModel matchedNote = AllNotes.Where((n) => n.Identifier == noteId).FirstOrDefault();
 
-            // If note exists, delete it
-            if (matchedNote != null)
-                AllNotes.Remove(matchedNote);
-        }
-        else if (query.ContainsKey("saved"))
-        {
-            string noteId = query["saved"].ToString();
-            NoteViewModel matchedNote = AllNotes.Where((n) => n.Identifier == noteId).FirstOrDefault();
-
-            // If note is found, update it
-            if (matchedNote != null){
-                matchedNote.Reload();
-                AllNotes.Move(AllNotes.IndexOf(matchedNote),0);
-            }
-               
-            // If note isn't found, it's new; add it.
-            else
-                AllNotes.Add(new NoteViewModel(Note.Load(noteId)));
-        }
+        // If note exists, delete it
+        if (matchedNote != null)
+            AllNotes.Remove(matchedNote);
     }
+    else if (query.ContainsKey("saved"))
+    {
+        string noteId = query["saved"].ToString();
+        NoteViewModel matchedNote = AllNotes.Where((n) => n.Identifier == noteId).FirstOrDefault();
+
+        // If note is found, update it
+        if (matchedNote != null)
+        {
+            matchedNote.Reload();
+            AllNotes.Move(AllNotes.IndexOf(matchedNote), 0);
+        }
+        // If note isn't found, it's new; add it.
+        else
+            AllNotes.Insert(0, new NoteViewModel(Models.Note.Load(noteId)));
+    }
+}
+
 }
